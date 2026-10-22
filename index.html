@@ -476,9 +476,6 @@ body.lite #fmenu{background:var(--bar)!important;box-shadow:0 0 0 1px var(--bd)!
 #cvname{font-size:13px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:260px}
 
 /* ---- canvas colour row, page grid, unified phone/PC polish ---- */
-.cvrow{display:flex;align-items:center;gap:8px;padding:8px 10px;border-top:1px solid var(--bd);font-size:13px;flex-wrap:wrap}
-.cvrow input[type=color]{width:34px;height:28px;padding:0;border:1px solid var(--bd);border-radius:6px;background:none}
-.cvrow .hx{width:78px;font:12px ui-monospace,monospace}.cvrow .cvx{font-size:12px;padding:4px 8px}
 #pgrid{position:absolute;inset:0;z-index:30;display:flex;flex-direction:column;background:var(--canvas,var(--bg))}
 #pgrid .pgtop{display:flex;align-items:center;gap:12px;padding:8px 14px;background:var(--bar);border-bottom:1px solid var(--bd)}
 #pgrid .grow{flex:1}#pgrid label{display:flex;align-items:center;gap:6px;font-size:12px;color:var(--mut)}
@@ -504,11 +501,31 @@ body.phone #pgtiles{grid-template-columns:repeat(auto-fill,minmax(min(var(--tw,1
 .bar input[type=search],.bar #q{background:rgba(255,255,255,.14)!important;box-shadow:inset 0 0 0 .5px rgba(255,255,255,.45),inset 0 1px 3px rgba(20,24,40,.12);border-color:transparent!important}
 :root[data-theme=dark] .bar input[type=search],:root[data-theme=dark] .bar #q{background:rgba(255,255,255,.07)!important}
 body.lite .bar{background:var(--bar)!important}
+
+/* ---- history buttons ---- */
+h1#hLib{cursor:pointer;user-select:none;-webkit-user-select:none}h1#hLib:focus-visible{outline:2px solid var(--ac);outline-offset:4px;border-radius:8px}
+.ib:disabled{opacity:.32;pointer-events:none}
+
+/* ---- canvas colour panel ---- */
+.cvrow{margin:8px;padding:12px 14px 12px;border-radius:20px;background:rgba(255,255,255,.28);box-shadow:inset 0 0 0 .5px rgba(255,255,255,.55),0 6px 24px -8px rgba(20,24,40,.25);-webkit-backdrop-filter:blur(18px) saturate(1.6);backdrop-filter:blur(18px) saturate(1.6);min-width:230px;font-size:13px}
+:root[data-theme=dark] .cvrow{background:rgba(255,255,255,.08)}
+.cvhead{display:flex;align-items:center;justify-content:space-between;font-weight:600;margin-bottom:10px}
+.cvhead .cvx{font-size:12px;padding:3px 9px;border-radius:999px}
+.cvstrip{position:relative;height:34px;border-radius:12px;margin:8px 0;touch-action:none;cursor:pointer;box-shadow:inset 0 0 0 .5px rgba(0,0,0,.12)}
+.cvstrip.hue{background:linear-gradient(90deg,hsl(0 75% 58%),hsl(40 85% 55%),hsl(90 60% 50%),hsl(150 60% 45%),hsl(200 75% 52%),hsl(250 70% 60%),hsl(300 65% 58%),hsl(340 75% 58%),hsl(360 75% 58%))}
+.cvstrip .th{position:absolute;top:-3px;width:40px;height:40px;margin-left:-20px;border-radius:12px;background:rgba(255,255,255,.85);box-shadow:0 2px 10px rgba(0,0,0,.3);display:flex;align-items:center;justify-content:center;pointer-events:none}
+.cvstrip .th::after{content:"";width:22px;height:22px;border-radius:50%;background:conic-gradient(red,#fc0,#3c3,#0cf,#63f,#f3c,red);box-shadow:inset 0 0 0 2px #fff}
+.cvstrip.shade .th{width:24px;margin-left:-12px;top:-2px;height:38px;border-radius:10px}.cvstrip.shade .th::after{display:none}
+.cvfoot{display:flex;align-items:center;gap:10px;margin-top:12px}.cvfoot .grow{flex:1}
+.cvfoot .lb{font-weight:600;opacity:.8}
+.cvwheel{position:relative;width:32px;height:32px;border-radius:50%;cursor:pointer;background:conic-gradient(red,#fc0,#3c3,#0cf,#63f,#f3c,red);box-shadow:inset 0 0 0 2px #fff,0 1px 6px rgba(0,0,0,.3)}
+.cvwheel input{position:absolute;inset:0;opacity:0;width:100%;height:100%;cursor:pointer}
+.cvdot{width:28px;height:28px;border-radius:50%;border:0;padding:0;box-shadow:inset 0 0 0 1px rgba(0,0,0,.2),0 1px 4px rgba(0,0,0,.2);cursor:pointer}
 </style>
 </head>
 <body>
 <svg width="0" height="0" style="position:absolute" aria-hidden="true"><defs>
-<symbol id="i-back" viewBox="0 0 24 24"><path d="M15 5l-7 7 7 7"/></symbol>
+<symbol id="i-histb" viewBox="0 0 24 24"><path d="M15 5l-7 7 7 7"/></symbol><symbol id="i-histf" viewBox="0 0 24 24"><path d="M9 5l7 7-7 7"/></symbol><symbol id="i-back" viewBox="0 0 24 24"><path d="M15 5l-7 7 7 7"/></symbol>
 <symbol id="i-next" viewBox="0 0 24 24"><path d="M9 5l7 7-7 7"/></symbol>
 <symbol id="i-side" viewBox="0 0 24 24"><rect x="3.5" y="4.5" width="17" height="15" rx="3"/><path d="M9.5 4.5v15"/></symbol>
 <symbol id="i-undo" viewBox="0 0 24 24"><path d="M8.5 5L4 9.5 8.5 14"/><path d="M4 9.5h9a6 6 0 010 12h-3"/></symbol>
@@ -532,14 +549,14 @@ body.lite .bar{background:var(--bar)!important}
 <symbol id="i-folder" viewBox="0 0 24 24"><path d="M3.5 7.5a2 2 0 012-2h4l2 2.5h7a2 2 0 012 2v7.5a2 2 0 01-2 2h-13a2 2 0 01-2-2z"/></symbol><symbol id="i-pen" viewBox="0 0 24 24"><path d="M4 20l1-4L16.5 4.5a2 2 0 013 3L8 19z"/></symbol><symbol id="i-conv" viewBox="0 0 24 24"><path d="M4 8h13l-3-3M20 16H7l3 3"/></symbol><symbol id="i-up" viewBox="0 0 24 24"><path d="M12 16V5M7 10l5-5 5 5M5 19h14"/></symbol><symbol id="i-trash" viewBox="0 0 24 24"><path d="M5 7h14M10 7V5h4v2M7 7l1 12h8l1-12"/></symbol><symbol id="i-info" viewBox="0 0 24 24"><circle cx="12" cy="12" r="8"/><path d="M12 11v5M12 8v.4"/></symbol><symbol id="i-tag" viewBox="0 0 24 24"><path d="M4 12V5h7l9 9-7 7z"/><circle cx="8.5" cy="8.5" r="1"/></symbol></defs></svg>
 <div id="home" class="screen">
  <div class="bar top">
-  <div class="side"><h1>Library</h1></div>
+  <div class="side"><button id="hBack" class="ib" title="Back" hidden><svg class="i"><use href="#i-histb"/></svg></button><button id="hFwd" class="ib" title="Forward" hidden><svg class="i"><use href="#i-histf"/></svg></button><h1 id="hLib" role="link" tabindex="0" title="Back to your library">Library</h1></div>
   <input id="q" type="search" placeholder="Search your books" style="width:min(320px,40vw)">
   <div class="side r">
    <button id="add" class="ib on" title="Add books"><svg class="i"><use href="#i-plus"/></svg></button><input id="files" type="file" accept=".epub,.pdf,.cbz,.zip,.txt,.text,.md,.markdown,.html,.htm,.xhtml,.fb2,.docx,.rtf,.mobi,.azw3,.cbr" multiple hidden>
    <button id="bAI" class="ib" title="AI settings (chapter names and summaries)"><svg class="i"><use href="#i-ai"/></svg></button>
-   <button id="bSync" class="ib" title="Sync across devices"><svg class="i"><use href="#i-cloud"/></svg></button>
+   <button id="bSync" class="ib" hidden title="Sync across devices"><svg class="i"><use href="#i-cloud"/></svg></button>
    <button id="bSort" class="ib" title="Sort"><svg class="i"><use href="#i-sort"/></svg></button>
-   <button id="bFonts" class="ib" title="Reading font"><svg class="i"><use href="#i-font"/></svg></button>
+   <button id="bFonts" class="ib" hidden title="Reading font"><svg class="i"><use href="#i-font"/></svg></button>
    <button class="ib bTheme" title="Theme"><svg class="i"><use href="#i-theme"/></svg></button>
   </div>
  </div>
@@ -549,14 +566,14 @@ body.lite .bar{background:var(--bar)!important}
 
 <div id="rd" class="screen" hidden>
  <div class="bar top">
-  <div class="side"><button id="back" class="ib" title="Library"><svg class="i"><use href="#i-back"/></svg></button><button id="tocbtn" class="ib" title="Contents"><svg class="i"><use href="#i-side"/></svg></button></div>
+  <div class="side"><button id="back" class="ib" title="Back to Library"><svg class="i"><use href="#i-book"/></svg></button><button id="rBack" class="ib" title="Back to where you were (Alt+Left)" disabled><svg class="i"><use href="#i-histb"/></svg></button><button id="rFwd" class="ib" title="Forward (Alt+Right)" disabled><svg class="i"><use href="#i-histf"/></svg></button><button id="tocbtn" class="ib" title="Contents"><svg class="i"><use href="#i-side"/></svg></button></div>
   <strong id="rt"></strong>
   <div class="side r"><button id="askbtn" class="ib" title="Ask anything about this book"><svg class="i"><use href="#i-ai"/></svg></button><button id="hlbtn" class="ib" title="Highlights &amp; notes"><svg class="i"><use href="#i-pen"/></svg></button><button id="undo" class="ib" title="Undo highlight (Ctrl+Z)"><svg class="i"><use href="#i-undo"/></svg></button><button id="info" class="ib" title="Rate and review"><svg class="i"><use href="#i-star"/></svg></button><button id="fs" class="ib" title="Full screen: one page at a time"><svg class="i"><use href="#i-expand"/></svg></button></div>
  </div>
  <div class="bar tools">
   <label class="pgin" title="Page"><input id="pn" type="number" min="1"><span id="pt"></span></label>
   <button id="smaller" class="ib" title="Zoom out"><svg class="i"><use href="#i-zout"/></svg></button><button id="bigger" class="ib" title="Zoom in"><svg class="i"><use href="#i-zin"/></svg></button>
-  <button id="bFont" class="ib epub-only" title="Font"><svg class="i"><use href="#i-font"/></svg></button>
+  <button id="bFont" class="ib epub-only" hidden title="Font"><svg class="i"><use href="#i-font"/></svg></button>
   <button id="bGap" class="ib epub-only" title="Line spacing"><svg class="i"><use href="#i-gap"/></svg></button>
   <button id="bGrid" class="ib" title="All pages (grid)"><svg class="i"><use href="#i-grid"/></svg></button>
   <button id="bView" class="ib" title="Page layout"><svg class="i"><use href="#i-book"/></svg></button>
@@ -755,7 +772,7 @@ async function addFiles(fs){
 /* library */
 const pctOf=b=>b.done?1:b.pct!=null?b.pct:typeof b.pos==="number"?b.pos:0;
 const stars=r=>[1,2,3,4,5].map(i=>`<i class="st" style="--f:${r>=i?100:r>=i-.5?50:0}%">★</i>`).join("");
-function render(){
+function render(){try{trackFold()}catch(e){}
  const q=$("q").value.toLowerCase(),so=S.sort||"opened";
  drawShelves();const l=books.filter(b=>inFold(b)&&(b.title+" "+b.author+" "+(b.genre||"")+" "+(b.folder||"")).toLowerCase().includes(q));
  const tt=(a,b)=>a.title.localeCompare(b.title);
@@ -961,6 +978,8 @@ async function openBook(b,cv){if(b.type==="wish"){priceDlg(b);return}
 async function openEpub(b,f){
  book=ePub(await f.arrayBuffer());
  rend=book.renderTo("view",{width:"100%",height:"100%",flow:"paginated",spread:twoUp()?"always":"none"});
+ rhReset();{const _d=rend.display.bind(rend);rend.display=t=>{if(!rhNav&&rhCur)rhPush();return _d(t)}}
+ rend.on("relocated",l=>{if(l&&l.start)rhCur=l.start.cfi});
  rend.hooks.content.register(c=>{style(c);hookUnderline(c)});
  rend.on("keydown",k=>{if(k.key!=="ArrowRight"&&k.key!=="ArrowLeft")return;k.preventDefault();const n=Date.now();if(n-kt<200)return;kt=n;pageTurn(k.key==="ArrowRight"?1:-1)});
  rend.on("keydown",k=>{if(((k.key==="f"||k.key==="F")&&!k.ctrlKey&&!k.metaKey&&!k.altKey||k.key==="Backspace"&&document.body.classList.contains("zen"))&&!k.repeat){if(k.key==="Backspace")k.preventDefault();toggleFs()}});
@@ -972,7 +991,7 @@ async function openEpub(b,f){
  book.ready.then(async()=>{if(b.locs)book.locations.load(b.locs);else{await book.locations.generate(1500);b.locs=book.locations.save();put(b)}if(rb===b&&rend)Promise.resolve(rend.currentLocation()).then(l=>l&&l.start&&epStatus(l))});
  buildToc(b);
 }
-async function openPdf(b,f){
+async function openPdf(b,f){rhReset();
  pdfDoc=await pdfjsLib.getDocument({data:new Uint8Array(await f.arrayBuffer())}).promise;
  await buildPdf(b.pos||0);buildToc(b);
 }
@@ -1053,7 +1072,7 @@ $("pdf").addEventListener("wheel",e=>{if(!document.body.classList.contains("zen"
 let mx=0,my=0,mraf=0;
 $("pdf").addEventListener("mousemove",e=>{mx=e.clientX;my=e.clientY;pdfLine(e)});
 $("pdf").addEventListener("scroll",()=>{if(!S.ul||mraf)return;mraf=requestAnimationFrame(()=>{mraf=0;const t=document.elementFromPoint(mx,my);if(t)pdfLine({target:t,clientX:mx,clientY:my})})});
-$("pn").onchange=e=>{if(rb&&rb.type==="epub"){const L=book.locations;if(L.length()){const n=Math.max(1,Math.min(L.length(),+e.target.value||1));rend.display(L.cfiFromLocation(n-1))}return}const h=$("pdf"),n=Math.max(1,Math.min(pdfDoc.numPages,+e.target.value||1));if(document.body.classList.contains("zen")){const g=h.querySelectorAll(".pg")[n-1];if(g)g.scrollIntoView({block:"center",inline:"center"})}else h.scrollTop=(n-1)/pdfDoc.numPages*h.scrollHeight};
+$("pn").onchange=e=>{if(rb&&rb.type==="epub"){const L=book.locations;if(L.length()){const n=Math.max(1,Math.min(L.length(),+e.target.value||1));rend.display(L.cfiFromLocation(n-1))}return}const h=$("pdf"),n=Math.max(1,Math.min(pdfDoc.numPages,+e.target.value||1));rhPush();if(document.body.classList.contains("zen")){const g=h.querySelectorAll(".pg")[n-1];if(g)g.scrollIntoView({block:"center",inline:"center"})}else h.scrollTop=(n-1)/pdfDoc.numPages*h.scrollHeight};
 const turn=d=>{hidePop();if(!rb)return;
  if(rb.type==="pdf"){const h=$("pdf");
   if(document.body.classList.contains("zen")){const{ps,i}=curPg(),j=Math.max(0,Math.min(ps.length-1,i+d*(twoUp()?2:1)));if(ps[j])ps[j].scrollIntoView({block:"center",inline:"center",behavior:"smooth"})}
@@ -1160,16 +1179,24 @@ function menu(btn,items,pick,cur,extra){
 }
 document.addEventListener("mousedown",e=>{if(!$("menu").hidden&&!e.target.closest("#menu")&&!e.target.closest(".ib"))vanish($("menu"))},true);
 addEventListener("keydown",e=>{if(e.key==="Escape")vanish($("menu"))});
+function hex2hsl(h){const n=parseInt(h.slice(1),16),r=(n>>16&255)/255,g=(n>>8&255)/255,b=(n&255)/255,mx=Math.max(r,g,b),mn=Math.min(r,g,b),l=(mx+mn)/2;let H=0,Sx=0;if(mx!==mn){const d=mx-mn;Sx=l>.5?d/(2-mx-mn):d/(mx+mn);H=mx===r?(g-b)/d+(g<b?6:0):mx===g?(b-r)/d+2:(r-g)/d+4;H*=60}return{h:H,s:Sx*100,l:l*100}}
+function hsl2hex(h,s,l){s/=100;l/=100;const a=s*Math.min(l,1-l),f=n=>{const k=(n+h/30)%12,c=l-a*Math.max(-1,Math.min(k-3,9-k,1));return Math.round(255*c).toString(16).padStart(2,"0")};return"#"+f(0)+f(8)+f(4)}
 function canvasRow(){
  const w=document.createElement("div");w.className="cvrow";
- w.innerHTML='<span>Canvas colour</span><input type="color" aria-label="Canvas colour"><input class="hx" maxlength="7" placeholder="#hex" aria-label="Canvas hex"><button type="button" class="cvx">Reset</button>';
- const c=w.querySelector('input[type=color]'),h=w.querySelector(".hx");
- const set=v=>{S.canvas=v;c.value=v||"#808080";h.value=v;restyle()};
- c.value=S.canvas||"#808080";h.value=S.canvas||"";
- c.oninput=e=>set(e.target.value);
- h.onchange=e=>{let v=e.target.value.trim();if(v&&v[0]!=="#")v="#"+v;if(/^#[0-9a-f]{6}$/i.test(v))set(v.toLowerCase());else if(!v)set("")};
- w.querySelector(".cvx").onclick=()=>set("");
- return w;
+ w.innerHTML='<div class="cvhead"><span>Canvas colour</span><button type="button" class="cvx">Reset</button></div><div class="cvstrip hue"><i class="th"></i></div><div class="cvstrip shade"><i class="th"></i></div><div class="cvfoot"><span class="lb">Presets</span><span class="grow"></span><label class="cvwheel" title="Colour wheel"><input type="color" aria-label="Open colour wheel"></label><button type="button" class="cvdot" data-c="#ffffff" title="White" style="background:#fff"></button><button type="button" class="cvdot" data-c="#ece2cf" title="Paper" style="background:#ece2cf"></button><button type="button" class="cvdot" data-c="#000000" title="Black" style="background:#000"></button></div>';
+ const hue=w.querySelector(".hue"),shade=w.querySelector(".shade"),wheel=w.querySelector('input[type=color]');
+ let c=S.canvas?hex2hsl(S.canvas):{h:250,s:65,l:55};let raf=0;
+ const paint=()=>{hue.querySelector(".th").style.left=(c.h/360*100)+"%";hue.querySelector(".th").style.display=S.canvas?"":"none";
+  const st=shade.querySelector(".th");st.style.left=((c.l-8)/84*100)+"%";st.style.display=S.canvas?"":"none";st.style.background=S.canvas||"#fff";
+  const sd=Math.max(c.s,40);shade.style.background="linear-gradient(90deg,hsl("+c.h+" "+sd+"% 8%),hsl("+c.h+" "+sd+"% 50%),hsl("+c.h+" "+sd+"% 92%))";wheel.value=S.canvas||"#808080"};
+ const apply=()=>{S.canvas=hsl2hex(c.h,c.s,c.l);paint();if(!raf)raf=requestAnimationFrame(()=>{raf=0;restyle()})};
+ const drag=(el,fn)=>{const mv=e=>{const r=el.getBoundingClientRect();fn(Math.max(0,Math.min(1,(e.clientX-r.left)/r.width)));apply()};
+  el.addEventListener("pointerdown",e=>{e.preventDefault();el.setPointerCapture(e.pointerId);if(!S.canvas&&c.s<40)c.s=65;mv(e);const up=()=>{el.removeEventListener("pointermove",mv);el.removeEventListener("pointerup",up);el.removeEventListener("pointercancel",up)};el.addEventListener("pointermove",mv);el.addEventListener("pointerup",up);el.addEventListener("pointercancel",up)})};
+ drag(hue,f=>{c.h=f*360;if(c.s<25)c.s=65});drag(shade,f=>{c.l=8+f*84});
+ wheel.oninput=e=>{S.canvas=e.target.value;c=hex2hsl(S.canvas);paint();restyle()};
+ w.querySelectorAll(".cvdot").forEach(b=>b.onclick=()=>{S.canvas=b.dataset.c;c=hex2hsl(S.canvas);paint();restyle()});
+ w.querySelector(".cvx").onclick=()=>{S.canvas="";paint();restyle()};
+ paint();return w;
 }
 document.querySelectorAll(".bTheme").forEach(b=>b.onclick=e=>{THEME_ITEMS[2].sw=ambCol(S.amb);THEME_ITEMS[4].t="Reduce effects: "+(S.lite?"on":"off");menu(e.currentTarget,THEME_ITEMS,v=>{if(v==="__fx"){S.lite=!S.lite;restyle();return}S.theme=v;restyle();if(v==="ambient")ambShow();else ambHide()},S.theme,canvasRow())});
 $("bSort").onclick=e=>menu(e.currentTarget,[{t:"Recently read",v:"opened"},{t:"Recently added",v:"added"},{t:"Title",v:"title"},{t:"Author",v:"author"},{t:"Genre",v:"genre"},{t:"Release date (newest)",v:"date"},{t:"Release date (oldest)",v:"dateold"},{t:"Unfinished first",v:"unfinished"},{t:"Finished first",v:"finished"},{t:"Rating",v:"rating"}],v=>{S.sort=v;saveS();render()},S.sort||"opened");
@@ -1307,7 +1334,7 @@ function renderToc(k){
 function goToc(t){
  if(!rb)return;if(phone())setToc(false);
  if(rb.type==="epub"){if(rend&&t.href)rend.display(t.href)}
- else if(t.page){const p=$("pdf").querySelectorAll(".pg")[t.page-1];if(p)p.scrollIntoView({block:"start",inline:"center"})}
+ else if(t.page){rhPush();const p=$("pdf").querySelectorAll(".pg")[t.page-1];if(p)p.scrollIntoView({block:"start",inline:"center"})}
 }
 function markToc(n){let a=-1;tocItems.forEach((t,i)=>{if(t.page&&t.page<=n)a=i});tocBtns.forEach((b,i)=>b.classList.toggle("act",i===a))}
 function markEp(loc){const base=((loc.start&&loc.start.href)||"").split("#")[0].split("/").pop();let a=-1;tocItems.forEach((t,i)=>{if(t.href&&t.href.split("#")[0].split("/").pop()===base)a=i});tocBtns.forEach((b,i)=>b.classList.toggle("act",i===a))}
@@ -1553,7 +1580,7 @@ $("aq").addEventListener("keydown",e=>{if(e.key==="Enter"&&!e.shiftKey){e.preven
 
 /* ---- sync: Google Drive private app folder (free, lives in the user's own Drive) ---- */
 /* >>> ONE-TIME DEVELOPER SETUP: paste your Google OAuth Client ID here (see the notes that came with this file). Users never see or type it. <<< */
-const GOOGLE_CLIENT_ID="861061061855-pjo25nilutvrjop55d8c0g39guf0d02p.apps.googleusercontent.com";
+const GOOGLE_CLIENT_ID="";
 const SK="reader-sync",G="https://www.googleapis.com/";
 let SY={cid:"",tok:"",exp:0,on:false};
 try{Object.assign(SY,JSON.parse(localStorage.getItem(SK)||"{}"))}catch(e){}
@@ -1563,7 +1590,7 @@ const tombs=()=>{try{return JSON.parse(localStorage.getItem("reader-tomb")||"{}"
 const setTombs=t=>{try{localStorage.setItem("reader-tomb",JSON.stringify(t))}catch(e){}};
 let syncing=false,again=false,stm;
 const sMsg=t=>{$("sst").textContent=t};
-function schedSync(ms){if(!SY.on)return;clearTimeout(stm);stm=setTimeout(sync,ms||6000)}
+function schedSync(ms){return} /* Google sync removed */
 function gis(){return new Promise((res,rej)=>{if(window.google&&google.accounts&&google.accounts.oauth2)return res();const s=document.createElement("script");s.src="https://accounts.google.com/gsi/client";s.onload=res;s.onerror=()=>rej(new Error("Couldn't reach Google (offline?)"));document.head.appendChild(s)})}
 async function token(interactive){
  if(SY.tok&&Date.now()<SY.exp-60000)return SY.tok;
@@ -1676,7 +1703,7 @@ $("zbar").onclick=e=>{e.stopPropagation();const t=$("ztip");clearTimeout(ztm);t.
 (async()=>{
  try{books=await tx("books","readonly",o=>o.getAll())||[]}catch(e){$("none").textContent="Storage is unavailable in this browser, so the library can't be saved."}
  for(const n of (S.upl||[])){try{const buf=await tx("files","readonly",o=>o.get("font:"+n));if(buf){fontBuf[n]=buf;reg(n);document.fonts.add(new FontFace(n,buf.slice(0)))}}catch(e){}}
- stag=true;syncUI();syncDlg();render();if(SY.on)token(false).then(()=>sync()).catch(()=>sMsg("Tap Sync now to reconnect"));
+ stag=true;syncUI();syncDlg();render();
  /* fill genre + release date for EPUBs added before these fields existed */
  for(const b of books){
   if(b.type!=="epub"||b.genre!==undefined)continue;
@@ -1915,10 +1942,13 @@ async function toHtml(ir){
 const GB="https://www.googleapis.com/books/v1/volumes";
 const clean=s=>String(s||"").replace(/\s*[\(\[].*?[\)\]]/g,"").replace(/[_.]+/g," ").replace(/\s+/g," ").trim();
 const topGenre=c=>String((c&&c[0])||"").split("/")[0].trim().slice(0,60);
-async function lookup(title,author,n){
- const t=clean(title),a=clean(author),q=(t?'intitle:"'+t+'"':"")+(a?' inauthor:"'+a+'"':"");
- const r=await fetch(GB+"?q="+encodeURIComponent(q||t)+"&maxResults="+(n||4)+"&country=IN&printType=books");
- if(!r.ok)throw new Error("lookup "+r.status);return(await r.json()).items||[];
+let metaWhy=[];
+async function lookup(title,author,n,loose){
+ const t=clean(title),a=clean(author);
+ const q=loose?(t+" "+a).trim():(t?'intitle:"'+t+'"':"")+(a?' inauthor:"'+a+'"':"");
+ const r=await fetch(GB+"?q="+encodeURIComponent(q||t)+"&maxResults="+(n||4)+"&printType=books");
+ if(!r.ok)throw new Error("Google Books error "+r.status);
+ return(await r.json()).items||[];
 }
 async function coverFrom(u){
  try{const r=await fetch(u);if(r.ok){const bl=await r.blob(),d=await new Promise(res=>{const fr=new FileReader();fr.onload=()=>res(fr.result);fr.readAsDataURL(bl)});return await shrink(d)||d}}catch(e){}
@@ -1930,9 +1960,13 @@ const needMeta=b=>b.type!=="wish"&&!/^(cbz|zip)$/.test(b.src||"")&&(!b.author||!
 const OL="https://openlibrary.org";
 async function olFill(b,force){
  const t=clean(b.title),a=clean(b.author);if(!t)return false;
- const r=await fetch(OL+"/search.json?limit=3&fields=key,title,author_name,first_publish_year,subject&title="+encodeURIComponent(t)+(a?"&author="+encodeURIComponent(a):""));
- if(!r.ok)throw new Error("ol "+r.status);
- const d=((await r.json()).docs||[])[0];if(!d)return false;
+ const f="&fields=key,title,author_name,first_publish_year,subject";
+ let d=null;
+ for(const u of [OL+"/search.json?limit=3"+f+"&title="+encodeURIComponent(t)+(a?"&author="+encodeURIComponent(a):""),OL+"/search.json?limit=3"+f+"&q="+encodeURIComponent((t+" "+a).trim())]){
+  const r=await fetch(u);if(!r.ok)throw new Error("Open Library error "+r.status);
+  d=((await r.json()).docs||[])[0];if(d)break;
+ }
+ if(!d)return false;
  if(force||!b.author)b.author=(d.author_name||[]).slice(0,3).join(", ")||b.author||"";
  if(force||!b.date)b.date=d.first_publish_year?String(d.first_publish_year):b.date||"";
  if(force||!b.genre){const g=(d.subject||[]).find(x=>x.length<=40&&!/accessible|protected|lending|in library|large type|reading level|overdrive|^nyt:/i.test(x));if(g)b.genre=g}
@@ -1941,10 +1975,13 @@ async function olFill(b,force){
 }
 /* returns true (found something), false (no match), null (couldn't reach the services) */
 async function fillMeta(b,force){
- let reached=false,found=false;
+ let reached=false,found=false;metaWhy=[];
  try{
-  let items=await lookup(b.title,b.author,4);if(!items.length&&b.author)items=await lookup(b.title,"",4);
-  reached=true;
+  let items=[];
+  for(const [a,loose] of [[b.author,false],["",false],[b.author,true]]){
+   try{items=await lookup(b.title,a,4,loose);reached=true}catch(e){metaWhy.push(e.message);items=[]}
+   if(items.length)break;
+  }
   items.forEach((it,k)=>{
    const v=it.volumeInfo||{},ow=cur=>!cur||(force&&k===0);found=true;
    if(ow(b.author)&&v.authors)b.author=v.authors.join(", ");
@@ -1954,20 +1991,21 @@ async function fillMeta(b,force){
   });
   const v0=(items[0]||{}).volumeInfo||{};
   if(!b.cover&&!b.custom&&v0.imageLinks){const u=(v0.imageLinks.thumbnail||v0.imageLinks.smallThumbnail||"").replace("http://","https://").replace("&edge=curl","");if(u)b.cover=await coverFrom(u)}
- }catch(e){}
- if(!b.genre||!b.date||!b.desc||!b.author){try{const ok=await olFill(b,false);reached=true;if(ok)found=true}catch(e){}}
+ }catch(e){metaWhy.push(e.message)}
+ if(!b.genre||!b.date||!b.desc||!b.author){try{const ok=await olFill(b,false);reached=true;if(ok)found=true}catch(e){metaWhy.push(e.message||"Open Library unreachable")}}
  return found?true:reached?false:null;
 }
+const whyTxt=()=>metaWhy.length?" ("+[...new Set(metaWhy)].join("; ")+")":"";
 function metaFields(){$("da").value=mb.author||"";$("dg").value=mb.genre||"";$("dd").value=mb.date||"";$("dov").value=mb.desc||""}
 async function autoMeta(){
  const b=mb;if(!b||b.mf2||!needMeta(b))return;
  const k=$("bMeta");k.textContent="Filling in details…";
  const r=await fillMeta(b);if(r!==null)b.mf2=1;
- if(mb===b){metaFields();k.textContent=r?"Details filled in ✓":r===false?"No online match found":"Couldn't reach the book services"}
+ if(mb===b){metaFields();k.textContent=r?"Details filled in ✓":r===false?"No online match found"+whyTxt():"Couldn't reach the book services"+whyTxt()}
 }
 $("bMeta").onclick=async e=>{
  const k=$("bMeta");k.textContent="Searching…";const r=await fillMeta(mb,e.shiftKey);if(r!==null)mb.mf2=1;
- metaFields();k.textContent=r?"Details filled in ✓":r===false?"No match found":"Couldn't reach the book services";
+ metaFields();k.textContent=r?"Details filled in ✓":r===false?"No match found"+whyTxt():"Couldn't reach the book services"+whyTxt();
 };
 $("df").oninput=e=>mb.folder=e.target.value.trim();
 $("dw").onchange=e=>mb.want=e.target.checked;
@@ -2050,7 +2088,7 @@ function drawHlist(){
   d.innerHTML=`<i class="dot" style="background:${o.color}"></i><div style="flex:1;min-width:0"><div class="hq">${o.u?"<u>":""}${esc(o.x||"(no text saved)")}${o.u?"</u>":""}</div><input placeholder="Add a note" value="${esc(o.nt)}"></div><button class="ib" title="Go to">\u2197</button><button class="ib" title="Delete">\u2715</button>`;
   const [go,del]=d.querySelectorAll("button");
   d.querySelector("input").onchange=e=>{o.items[0].nt=e.target.value.trim();put(rb)};
-  go.onclick=()=>{const h=o.items[0];softClose($("hdlg"));if(h.t==="e")rend.display(h.cfi);else{const p=$("pdf").querySelector('.pg[data-n="'+h.n+'"]');if(p)p.scrollIntoView({block:"start"})}};
+  go.onclick=()=>{const h=o.items[0];softClose($("hdlg"));if(h.t==="e")rend.display(h.cfi);else{rhPush();const p=$("pdf").querySelector('.pg[data-n="'+h.n+'"]');if(p)p.scrollIntoView({block:"start"})}};
   del.onclick=()=>{o.items.forEach(h=>{rmEpubHl(h);rb.hl.splice(rb.hl.indexOf(h),1)});if(rb.type==="pdf")$("pdf").querySelectorAll(".pg").forEach(drawHl);put(rb);drawHlist()};
   w.appendChild(d);
  });
@@ -2217,7 +2255,7 @@ async function openGrid(){
    try{const p=await doc.getPage(+e.target.dataset.n),v=p.getViewport({scale:1}),sc=Math.min(2,(S.gsz*(devicePixelRatio||1))/v.width),vp=p.getViewport({scale:sc}),c=document.createElement("canvas");c.width=vp.width;c.height=vp.height;
     await p.render({canvasContext:c.getContext("2d"),viewport:vp}).promise;const th=e.target.querySelector(".th");th.style.aspectRatio=v.width+"/"+v.height;th.appendChild(c)}catch(x){}
   }),{root:host,rootMargin:"600px"});
-  for(let i=1;i<=doc.numPages;i++){const b=mk(i,String(i));if(i===cur)b.classList.add("cur");b.onclick=()=>{closeGrid();const g=$("pdf").querySelectorAll(".pg")[i-1];if(g)g.scrollIntoView({block:"start",inline:"center"})};gridIO.observe(b)}
+  for(let i=1;i<=doc.numPages;i++){const b=mk(i,String(i));if(i===cur)b.classList.add("cur");b.onclick=()=>{rhPush();closeGrid();const g=$("pdf").querySelectorAll(".pg")[i-1];if(g)g.scrollIntoView({block:"start",inline:"center"})};gridIO.observe(b)}
  }else if(rb.type==="epub"&&book){
   await book.ready;const items=[];book.spine.each(it=>{if(it.linear!==false)items.push(it)});
   let curH="";try{const l=await rend.currentLocation();curH=((l&&l.start&&l.start.href)||"").split("#")[0]}catch(x){}
@@ -2232,6 +2270,28 @@ async function openGrid(){
 $("bGrid").onclick=openGrid;$("pgx").onclick=closeGrid;
 $("pgsz").oninput=e=>{S.gsz=+e.target.value;$("pgtiles").style.setProperty("--tw",S.gsz+"px");saveS()};
 addEventListener("keydown",e=>{if(e.key==="Escape"&&!$("pgrid").hidden)closeGrid()});
+
+
+/* ---- back / forward through places you jumped between ---- */
+let rhB=[],rhF=[],rhCur=null,rhNav=false;
+const rhPos=()=>{if(!rb)return null;if(rb.type==="epub")return rhCur?{t:"e",cfi:rhCur}:null;if(pdfDoc)return{t:"p",n:curPg().i+1};return null};
+function rhUI(){$("rBack").disabled=!rhB.length;$("rFwd").disabled=!rhF.length}
+function rhPush(){if(rhNav)return;const p=rhPos();if(!p)return;const l=rhB[rhB.length-1];if(l&&l.t===p.t&&l.cfi===p.cfi&&l.n===p.n)return;rhB.push(p);if(rhB.length>50)rhB.shift();rhF=[];rhUI()}
+function rhGo(p){rhNav=true;setTimeout(()=>{rhNav=false},900);if(p.t==="e"){if(rend)rend.display(p.cfi)}else{const g=$("pdf").querySelectorAll(".pg")[p.n-1];if(g)g.scrollIntoView({block:"start",inline:"center"})}}
+function rhBack(){if(!rhB.length)return;const c=rhPos();if(c)rhF.push(c);rhGo(rhB.pop());rhUI()}
+function rhFwd(){if(!rhF.length)return;const c=rhPos();if(c)rhB.push(c);rhGo(rhF.pop());rhUI()}
+function rhReset(){rhB=[];rhF=[];rhCur=null;rhUI()}
+$("rBack").onclick=rhBack;$("rFwd").onclick=rhFwd;
+addEventListener("keydown",e=>{if(!e.altKey||$("rd").hidden)return;if(e.key==="ArrowLeft"){e.preventDefault();rhBack()}else if(e.key==="ArrowRight"){e.preventDefault();rhFwd()}});
+
+/* ---- back / forward between library folders; Library title goes home ---- */
+let fhB=[],fhF=[],fhLast="__all",fhNav=false;
+function fhUI(){$("hBack").hidden=!fhB.length;$("hFwd").hidden=!fhF.length}
+function trackFold(){if(curFold===fhLast)return;if(!fhNav){fhB.push(fhLast);if(fhB.length>40)fhB.shift();fhF=[]}fhNav=false;fhLast=curFold;fhUI()}
+$("hBack").onclick=()=>{if(!fhB.length)return;fhF.push(curFold);fhNav=true;curFold=fhB.pop();render()};
+$("hFwd").onclick=()=>{if(!fhF.length)return;fhB.push(curFold);fhNav=true;curFold=fhF.pop();render()};
+function libHome(){$("q").value="";if(curFold!=="__all")curFold="__all";render();const g=$("grid");if(g)g.scrollTo({top:0,behavior:"smooth"})}
+$("hLib").onclick=libHome;$("hLib").onkeydown=e=>{if(e.key==="Enter"||e.key===" "){e.preventDefault();libHome()}};
 
 /* ---- converter ---- */
 let cvFile=null;

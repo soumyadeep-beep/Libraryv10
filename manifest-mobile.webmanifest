@@ -1,0 +1,16 @@
+{
+  "name": "Reader Mobile",
+  "short_name": "Reader",
+  "description": "Your personal ebook library and reader, built for phones",
+  "id": "./Libraryv10-mobile.html",
+  "start_url": "./Libraryv10-mobile.html",
+  "scope": "./",
+  "display": "standalone",
+  "background_color": "#fafaf7",
+  "theme_color": "#F8F0E6",
+  "icons": [
+    {"src": "icon-192.png", "sizes": "192x192", "type": "image/png"},
+    {"src": "icon-512.png", "sizes": "512x512", "type": "image/png"},
+    {"src": "icon-512-maskable.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable"}
+  ]
+}
