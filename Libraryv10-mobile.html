@@ -790,6 +790,23 @@ button, select, input, textarea { min-width: 0; }
   body { padding-left: env(safe-area-inset-left, 0px); padding-right: env(safe-area-inset-right, 0px); }
 }
 
+
+/* Contrast-first adaptive chrome: keep the glass effect without letting page/canvas colours wash out controls. */
+.bar,#menu,#pop,#toc,#fsx,.more{
+ color:var(--fg);
+ background:color-mix(in srgb,var(--bg) 88%,transparent);
+ border:1px solid color-mix(in srgb,var(--fg) 12%,transparent);
+ -webkit-backdrop-filter:blur(24px) saturate(1.35);backdrop-filter:blur(24px) saturate(1.35);
+}
+.bar button,.bar .ib,#toc button,#toc a,#menu button,#pop button{color:var(--fg)}
+#toc{background:color-mix(in srgb,var(--bg) 94%,transparent);box-shadow:0 12px 36px rgba(0,0,0,.18),inset 0 0 0 1px color-mix(in srgb,var(--fg) 8%,transparent)}
+#toc .ti.act{color:var(--ac)}
+body.phone #rd .bar.tools{box-sizing:border-box;width:calc(100% - 20px);max-width:calc(100% - 20px);margin-left:10px;margin-right:10px;padding-left:8px;padding-right:8px;gap:clamp(0px,1vw,6px);justify-content:space-between;overflow-x:auto;overscroll-behavior-x:contain;scrollbar-width:none}
+body.phone #rd .bar.tools::-webkit-scrollbar{display:none}
+body.phone #rd .bar.top{box-sizing:border-box;width:calc(100% - 20px);max-width:calc(100% - 20px);margin-left:10px;margin-right:10px;padding-left:10px;padding-right:10px;gap:5px}
+body.phone #rd .bar.tools .ib{flex:0 0 auto}
+@media(max-width:420px){body.phone #rd .bar.tools{min-height:58px;border-radius:24px}body.phone #rd .bar.tools .ib{width:42px;height:44px}body.phone #rd .bar.tools svg.i{width:23px;height:23px;stroke-width:2.2}body.phone #rd .bar.top{border-radius:18px}}
+@media(prefers-reduced-transparency:reduce){.bar,#menu,#pop,#toc,#fsx,.more{background:var(--bg);-webkit-backdrop-filter:none;backdrop-filter:none}}
 </style>
 </head>
 <body>
