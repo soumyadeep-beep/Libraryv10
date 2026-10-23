@@ -251,6 +251,45 @@ body.phone .more{background:rgba(0,0,0,.38);color:#fff;border:0;-webkit-backdrop
 #grid.stag .card{animation:rise .75s var(--spring) both;animation-delay:calc(var(--i,0)*45ms)}
 .card.fresh{animation:rise .85s var(--pop) both}
 
+/* ---- contrast-first reader chrome ---- */
+/* Reader controls must remain readable regardless of the book/canvas colour. */
+.bar,#menu,#pop,#fsx,.more{
+  background:rgba(250,250,248,.97);
+  color:#202124;
+  border:1px solid rgba(30,35,40,.14);
+  -webkit-backdrop-filter:blur(18px) saturate(1.25);
+  backdrop-filter:blur(18px) saturate(1.25);
+  box-shadow:0 4px 18px rgba(0,0,0,.14);
+}
+.bar button,.bar select,.bar input,#menu button,#pop button,.more{color:#202124}
+:root[data-theme=dark] .bar,
+:root[data-theme=dark] #menu,
+:root[data-theme=dark] #pop,
+:root[data-theme=dark] #fsx,
+:root[data-theme=dark] .more{
+  background:rgba(31,33,39,.97);color:#f5f6f8;
+  border-color:rgba(255,255,255,.16);
+  box-shadow:0 4px 20px rgba(0,0,0,.38);
+}
+:root[data-theme=dark] .bar button,
+:root[data-theme=dark] .bar select,
+:root[data-theme=dark] .bar input,
+:root[data-theme=dark] #menu button,
+:root[data-theme=dark] #pop button,
+:root[data-theme=dark] .more{color:#f5f6f8}
+#toc,body.phone #toc{
+  background:rgba(27,32,40,.96);color:#f7f8fa;
+  border:1px solid rgba(255,255,255,.18);
+  -webkit-backdrop-filter:blur(22px) saturate(1.15);
+  backdrop-filter:blur(22px) saturate(1.15);
+  box-shadow:0 8px 28px rgba(0,0,0,.28);
+}
+#toc h4{color:#e1e5eb}
+#toc .ti{color:#f7f8fa}
+#toc .ti:hover{background:rgba(255,255,255,.13)}
+#toc .ti.act{background:rgba(80,160,255,.28);color:#fff}
+:root[data-theme=dark] #toc, :root[data-theme=dark] body.phone #toc{background:rgba(24,27,33,.97);color:#f7f8fa}
+
 /* ---- contents sidebar ---- */
 #toc{border-radius:22px;margin:10px 0 10px 12px;animation:tocInD .5s var(--spring)}
 .ti{border-radius:12px;transition:background-color .2s ease,color .2s ease}
