@@ -763,6 +763,33 @@ body.lite #mdock,body.lite #msheet{background:var(--bar)!important;box-shadow:0 
   .mi { padding: 10px 12px; font-size: 15px; }
 }
 html.has-canvas body.zen #wrap, html.has-canvas body.zen #view { background: var(--canvas, transparent) !important; }
+
+
+/* Responsive hardening: narrow phones, tablets, landscape, and safe areas */
+img, canvas, video, iframe { max-width: 100%; }
+button, select, input, textarea { min-width: 0; }
+#home, #rd, #wrap, #view, #pdf { min-width: 0; }
+.bar { max-width: 100%; }
+@media (max-width: 700px) {
+  #grid { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 14px; padding: 14px; }
+  #toc { width: min(84vw, 320px); }
+  #rd .bar { gap: 4px; }
+  #rd .bar.tools { justify-content: flex-start; }
+  dialog { max-width: calc(100vw - 20px); }
+}
+@media (min-width: 701px) and (max-width: 1024px) {
+  #grid { grid-template-columns: repeat(auto-fill, minmax(145px, 1fr)); gap: 20px; padding: 20px; }
+  #toc { width: 230px; }
+}
+@media (max-height: 520px) and (orientation: landscape) {
+  .bar { padding-top: 3px; padding-bottom: 3px; }
+  body.phone #rd .bar.tools { max-height: 54px; }
+  body.phone dialog { max-height: 96dvh; }
+}
+@supports (padding: max(0px)) {
+  body { padding-left: env(safe-area-inset-left, 0px); padding-right: env(safe-area-inset-right, 0px); }
+}
+
 </style>
 </head>
 <body>
@@ -1697,7 +1724,7 @@ async function buildToc(b){
  if(ok()&&tocItems.length){b.toc=tocItems.map(t=>({...t}));b.tocv=3;put(b)}
 }
 
-/* ---- AI: chapter names + summaries (Google Gemini, free tier; key lives only in this browser) ---- */
+/* ---- AI: chapter names + summaries (Google Gemini, free tier; key is stored in this browser (not secure for shared devices)) ---- */
 const AI={key:"",model:"gemini-2.5-flash"};
 try{Object.assign(AI,JSON.parse(localStorage.getItem("reader-ai")||"{}"))}catch(e){}
 const aiMsg=t=>{$("aimsg").textContent=t||""},sleep=ms=>new Promise(r=>setTimeout(r,ms));
@@ -2187,17 +2214,7 @@ const toTxt=ir=>(ir.title+(ir.author?"\n"+ir.author:"")+"\n\n"+ir.chapters.map(c
 async function toHtml(ir){
  const map={};ir.images.forEach(im=>map[im.n]="data:"+im.type+";base64,"+b64(im.data));
  const body=ir.chapters.map(c=>c.h.replace(/src="(x-img\/[^"]+)"/g,(m,p)=>map[p]?'src="'+map[p]+'"':m)).join("\n<hr/>\n");
- return'<!DOCTYPE html><html><head><meta charset="utf-8"><title>'+esc(ir.title)+'</title><style>body{max-width:42em;margin:2em auto;padding:0 1em;font:18px/1.6 Georgia,serif}img{max-width:100%}.cm{display:block;margin:0 auto;page-break-after:always}@media print{hr{display:none}}
-@media (max-width: 480px) {
-  :root { --dockh: 56px; }
-  .dk.fab { width: 50px !important; height: 50px !important; transform: translateY(-10px); }
-  .dk.fab svg.i { width: 24px !important; height: 24px !important; }
-  body.phone #rd .bar.tools .ib, body.zen #rd .bar.tools .ib { width: 44px; height: 44px; }
-  body.phone #rd .bar.tools svg.i, body.zen #rd .bar.tools svg.i { width: 22px; height: 22px; }
-  .mi { padding: 10px 12px; font-size: 15px; }
-}
-html.has-canvas body.zen #wrap, html.has-canvas body.zen #view { background: var(--canvas, transparent) !important; }
-</style></head><body><h1>'+esc(ir.title)+"</h1>"+(ir.author?"<p><i>"+esc(ir.author)+"</i></p>":"")+body+"</body></html>";
+ return'<!DOCTYPE html><html><head><meta charset="utf-8"><title>'+esc(ir.title)+'</title><style>body{max-width:42em;margin:2em auto;padding:0 1em;font:18px/1.6 Georgia,serif}img{max-width:100%}.cm{display:block;margin:0 auto;page-break-after:always}@media print{hr{display:none}}@media(max-width:480px){.dk.fab{width:50px!important;height:50px!important;transform:translateY(-10px)}.dk.fab svg.i{width:24px!important;height:24px!important}body.phone #rd .bar.tools .ib,body.zen #rd .bar.tools .ib{width:44px;height:44px}body.phone #rd .bar.tools svg.i,body.zen #rd .bar.tools svg.i{width:22px;height:22px}.mi{padding:10px 12px;font-size:15px}}html.has-canvas body.zen #wrap,html.has-canvas body.zen #view{background:var(--canvas,transparent)!important}</style></head><body><h1>'+esc(ir.title)+"</h1>"+(ir.author?"<p><i>"+esc(ir.author)+"</i></p>":"")+body+"</body></html>";
 }
 </script>
 <script>
