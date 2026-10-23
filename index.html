@@ -760,6 +760,42 @@ body.phone #rd .bar.top{box-sizing:border-box;width:calc(100% - 20px);max-width:
 body.phone #rd .bar.tools .ib{flex:0 0 auto}
 @media(max-width:420px){body.phone #rd .bar.tools{min-height:58px;border-radius:24px}body.phone #rd .bar.tools .ib{width:42px;height:44px}body.phone #rd .bar.tools svg.i{width:23px;height:23px;stroke-width:2.2}body.phone #rd .bar.top{border-radius:18px}}
 @media(prefers-reduced-transparency:reduce){.bar,#menu,#pop,#toc,#fsx,.more{background:var(--bg);-webkit-backdrop-filter:none;backdrop-filter:none}}
+
+/* Final readability override: reader chrome must not inherit canvas-derived text colours. */
+#toc, body.phone #toc {
+  background: rgba(27, 32, 40, .98) !important;
+  color: #f7f8fa !important;
+  border: 1px solid rgba(255,255,255,.24) !important;
+  -webkit-backdrop-filter: blur(18px) !important;
+  backdrop-filter: blur(18px) !important;
+  box-shadow: 0 10px 32px rgba(0,0,0,.34) !important;
+}
+#toc h4, #toc .mut { color: #e8edf4 !important; opacity: 1 !important; }
+#toc .ti { color: #f7f8fa !important; background: transparent !important; }
+#toc .ti:hover, #toc .ti:focus-visible { background: rgba(255,255,255,.16) !important; color: #fff !important; }
+#toc .ti.act { background: rgba(60,145,255,.42) !important; color: #fff !important; }
+#toc .aib button { background: rgba(255,255,255,.10) !important; color: #fff !important; border: 1px solid rgba(255,255,255,.18) !important; }
+#toc .aib button:hover { background: rgba(255,255,255,.19) !important; }
+#rd .bar, #rd .bar.tools, #status {
+  color: #202124;
+}
+#rd .bar button, #rd .bar select, #rd .bar input { color: #202124; }
+:root[data-theme=dark] #rd .bar, :root[data-theme=dark] #rd .bar.tools {
+  background: rgba(31,33,39,.98) !important; color: #f5f6f8 !important;
+}
+:root[data-theme=dark] #rd .bar button, :root[data-theme=dark] #rd .bar select { color: #f5f6f8 !important; }
+/* Delayed chapter hover preview */
+#tocPreview {
+  position: fixed; z-index: 10050; display: none; width: min(310px, 72vw);
+  padding: 12px 14px; border-radius: 13px; background: rgba(22,25,31,.98);
+  color: #f7f8fa; border: 1px solid rgba(255,255,255,.2);
+  box-shadow: 0 10px 30px rgba(0,0,0,.35); pointer-events: none;
+  font: 13px/1.45 system-ui, sans-serif; white-space: normal;
+}
+#tocPreview strong { display:block; font-size:13px; margin-bottom:5px; color:#fff; }
+#tocPreview span { display:block; color:#d9e0e9; }
+@media (hover:none) { #tocPreview { display:none !important; } }
+
 </style>
 </head>
 <body>
@@ -1579,7 +1615,10 @@ function renderToc(k){
  if(k!==undefined&&tocBtns[k]){tocBtns[k].textContent=tocItems[k].label;return}
  const s=$("toclist");s.innerHTML="";tocBtns=[];
  if(!tocItems.length){s.innerHTML='<div class="mut" id="tocnote" style="padding:8px 10px">Reading the book…</div>';return}
- tocItems.forEach(t=>{const b=document.createElement("button");b.className="ti";b.style.paddingLeft=(10+t.level*14)+"px";b.textContent=t.label||"…";b.onclick=()=>goToc(t);s.appendChild(b);tocBtns.push(b)});
+ tocItems.forEach((t,i)=>{const b=document.createElement("button");b.className="ti";b.style.paddingLeft=(10+t.level*14)+"px";b.textContent=t.label||"…";b.onclick=()=>goToc(t);b.dataset.tocIndex=String(i);b.setAttribute("aria-label",t.label||("Section "+(i+1)));s.appendChild(b);tocBtns.push(b)});
+ let preview=document.getElementById("tocPreview");
+ if(!preview){preview=document.createElement("div");preview.id="tocPreview";preview.setAttribute("role","tooltip");document.body.appendChild(preview)}
+ tocBtns.forEach((b,i)=>{let timer;const show=()=>{clearTimeout(timer);timer=setTimeout(()=>{const t=tocItems[i]||{};preview.innerHTML="<strong></strong><span></span>";preview.querySelector("strong").textContent=t.label||("Section "+(i+1));preview.querySelector("span").textContent=t.page?"PDF page "+t.page:(t.href?"EPUB section":"Book section");const r=b.getBoundingClientRect();preview.style.display="block";const w=preview.offsetWidth;let x=r.right+12;if(x+w>innerWidth-8)x=Math.max(8,r.left-w-12);let y=Math.min(Math.max(8,r.top),innerHeight-preview.offsetHeight-8);preview.style.left=x+"px";preview.style.top=y+"px";},850)};b.addEventListener("mouseenter",show);b.addEventListener("mouseleave",()=>{clearTimeout(timer);preview.style.display="none"});b.addEventListener("focus",show);b.addEventListener("blur",()=>{clearTimeout(timer);preview.style.display="none"})});
 }
 function goToc(t){
  if(!rb)return;if(phone())setToc(false);
