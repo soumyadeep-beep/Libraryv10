@@ -1618,7 +1618,70 @@ function renderToc(k){
  tocItems.forEach((t,i)=>{const b=document.createElement("button");b.className="ti";b.style.paddingLeft=(10+t.level*14)+"px";b.textContent=t.label||"…";b.onclick=()=>goToc(t);b.dataset.tocIndex=String(i);b.setAttribute("aria-label",t.label||("Section "+(i+1)));s.appendChild(b);tocBtns.push(b)});
  let preview=document.getElementById("tocPreview");
  if(!preview){preview=document.createElement("div");preview.id="tocPreview";preview.setAttribute("role","tooltip");document.body.appendChild(preview)}
- tocBtns.forEach((b,i)=>{let timer;const show=()=>{clearTimeout(timer);timer=setTimeout(()=>{const t=tocItems[i]||{};preview.innerHTML="<strong></strong><span></span>";preview.querySelector("strong").textContent=t.label||("Section "+(i+1));preview.querySelector("span").textContent=t.page?"PDF page "+t.page:(t.href?"EPUB section":"Book section");const r=b.getBoundingClientRect();preview.style.display="block";const w=preview.offsetWidth;let x=r.right+12;if(x+w>innerWidth-8)x=Math.max(8,r.left-w-12);let y=Math.min(Math.max(8,r.top),innerHeight-preview.offsetHeight-8);preview.style.left=x+"px";preview.style.top=y+"px";},850)};b.addEventListener("mouseenter",show);b.addEventListener("mouseleave",()=>{clearTimeout(timer);preview.style.display="none"});b.addEventListener("focus",show);b.addEventListener("blur",()=>{clearTimeout(timer);preview.style.display="none"})});
+ tocBtns.forEach((b,i)=>{
+  let timer;
+  const hide=()=>{
+   clearTimeout(timer);
+   preview._previewToken=(preview._previewToken||0)+1;
+   preview.style.display="none";
+  };
+  const show=()=>{
+   clearTimeout(timer);
+   timer=setTimeout(async()=>{
+    const t=tocItems[i]||{};
+    const token=preview._previewToken=(preview._previewToken||0)+1;
+    preview.innerHTML='<strong></strong><div class="toc-preview-empty">Preparing preview…</div><span></span>';
+    preview.querySelector("strong").textContent=t.label||("Section "+(i+1));
+    preview.querySelector("span").textContent=t.page?"PDF page "+t.page:(t.href?"EPUB section":"Book section");
+    const r=b.getBoundingClientRect();
+    preview.style.display="block";
+    const w=preview.offsetWidth;
+    let x=r.right+12;
+    if(x+w>innerWidth-8)x=Math.max(8,r.left-w-12);
+    let y=Math.min(Math.max(8,r.top),innerHeight-preview.offsetHeight-8);
+    preview.style.left=x+"px";
+    preview.style.top=y+"px";
+    const empty=preview.querySelector(".toc-preview-empty");
+    if(t.page&&pdfDoc){
+     try{
+      const page=await pdfDoc.getPage(Number(t.page));
+      if(token!==preview._previewToken||preview.style.display==="none")return;
+      const base=page.getViewport({scale:1});
+      const scale=Math.min(.55,270/base.width);
+      const viewport=page.getViewport({scale});
+      const canvas=document.createElement("canvas");
+      canvas.className="toc-preview-page";
+      canvas.width=Math.max(1,Math.ceil(viewport.width));
+      canvas.height=Math.max(1,Math.ceil(viewport.height));
+      await page.render({canvasContext:canvas.getContext("2d"),viewport}).promise;
+      if(token!==preview._previewToken||preview.style.display==="none")return;
+      empty.replaceWith(canvas);
+      preview.style.top=Math.min(Math.max(8,r.top),innerHeight-preview.offsetHeight-8)+"px";
+     }catch(err){
+      if(token===preview._previewToken&&empty)empty.textContent="Page preview unavailable";
+     }
+    }else if(t.href){
+     empty.textContent="EPUB chapter preview is text-only";
+     try{
+      const href=t.href.split("#")[0];
+      const section=book&&book.spine&&book.spine.get(href);
+      if(section){
+       await section.load(book.load.bind(book));
+       const excerpt=(section.document.body&&section.document.body.innerText||"").trim().replace(/\\s+/g," ");
+       if(token===preview._previewToken&&excerpt)empty.textContent=excerpt.slice(0,360)+(excerpt.length>360?"…":"");
+       try{section.unload()}catch(err){}
+      }
+     }catch(err){}
+    }else{
+     empty.textContent="Preview not available for this section";
+    }
+   },650);
+  };
+  b.addEventListener("mouseenter",show);
+  b.addEventListener("mouseleave",hide);
+  b.addEventListener("focus",show);
+  b.addEventListener("blur",hide);
+ });
 }
 function goToc(t){
  if(!rb)return;if(phone())setToc(false);
@@ -2223,7 +2286,71 @@ const toTxt=ir=>(ir.title+(ir.author?"\n"+ir.author:"")+"\n\n"+ir.chapters.map(c
 async function toHtml(ir){
  const map={};ir.images.forEach(im=>map[im.n]="data:"+im.type+";base64,"+b64(im.data));
  const body=ir.chapters.map(c=>c.h.replace(/src="(x-img\/[^"]+)"/g,(m,p)=>map[p]?'src="'+map[p]+'"':m)).join("\n<hr/>\n");
- return'<!DOCTYPE html><html><head><meta charset="utf-8"><title>'+esc(ir.title)+'</title><style>body{max-width:42em;margin:2em auto;padding:0 1em;font:18px/1.6 Georgia,serif}img{max-width:100%}.cm{display:block;margin:0 auto;page-break-after:always}@media print{hr{display:none}}</style></head><body><h1>'+esc(ir.title)+"</h1>"+(ir.author?"<p><i>"+esc(ir.author)+"</i></p>":"")+body+"</body></html>";
+ return'<!DOCTYPE html><html><head><meta charset="utf-8"><title>'+esc(ir.title)+'</title><style>body{max-width:42em;margin:2em auto;padding:0 1em;font:18px/1.6 Georgia,serif}img{max-width:100%}.cm{display:block;margin:0 auto;page-break-after:always}@media print{hr{display:none}}
+/* Final chapter-sidebar contrast and visual page-preview overrides */
+#toc, body.phone #toc {
+  color: #f7f9fc !important;
+  background: rgba(25,30,39,.90) !important;
+  border: 1px solid rgba(255,255,255,.24) !important;
+  -webkit-backdrop-filter: blur(28px) saturate(1.3) !important;
+  backdrop-filter: blur(28px) saturate(1.3) !important;
+  box-shadow: 0 16px 42px rgba(0,0,0,.30), inset 0 1px 0 rgba(255,255,255,.16) !important;
+}
+#toc h4, #toc .mut { color: #e9eef7 !important; opacity: 1 !important; }
+#toc .ti {
+  color: #f7f9fc !important;
+  background: transparent !important;
+  text-shadow: 0 1px 2px rgba(0,0,0,.18);
+}
+#toc .ti:hover, #toc .ti:focus-visible {
+  background: rgba(255,255,255,.14) !important;
+  color: #fff !important;
+  outline: 1px solid rgba(255,255,255,.18);
+  outline-offset: -1px;
+}
+#toc .ti.act {
+  background: rgba(72,151,255,.38) !important;
+  color: #fff !important;
+  box-shadow: inset 0 0 0 1px rgba(160,205,255,.32);
+}
+#tocPreview {
+  width: min(330px, 76vw) !important;
+  padding: 12px !important;
+  background: rgba(22,26,34,.98) !important;
+  border: 1px solid rgba(255,255,255,.22) !important;
+  border-radius: 16px !important;
+  box-shadow: 0 18px 44px rgba(0,0,0,.42), inset 0 1px 0 rgba(255,255,255,.10) !important;
+  color: #f7f8fa !important;
+}
+#tocPreview .toc-preview-page {
+  display: block;
+  width: 100%;
+  max-height: 235px;
+  object-fit: contain;
+  margin: 9px 0 8px;
+  border-radius: 5px;
+  background: #f7f5ef;
+  box-shadow: 0 3px 12px rgba(0,0,0,.24);
+}
+#tocPreview .toc-preview-empty {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 100px;
+  margin: 9px 0 8px;
+  padding: 12px;
+  border: 1px solid rgba(255,255,255,.13);
+  border-radius: 8px;
+  color: #d9e0e9;
+  text-align: center;
+  background: rgba(255,255,255,.05);
+  overflow-wrap: anywhere;
+}
+#tocPreview strong { color: #fff !important; font-size: 13px; line-height: 1.35; }
+#tocPreview span { color: #d9e0e9 !important; }
+@media (hover:none) { #tocPreview { display: none !important; } }
+
+</style></head><body><h1>'+esc(ir.title)+"</h1>"+(ir.author?"<p><i>"+esc(ir.author)+"</i></p>":"")+body+"</body></html>";
 }
 </script>
 <script>
